@@ -1,47 +1,58 @@
 import streamlit as st
 import pickle
 import pandas as pd
-import requests 
+import requests
+import os
 
-# Function to fetch movie poster from TMDB API
+# ---------- PATH SETUP ----------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+simi_path = os.path.join(BASE_DIR, 'simi.pkl')
+movies_dict_path = os.path.join(BASE_DIR, 'moviesdict.pkl')
+
+# ---------- LOAD FILES ----------
+similarity = pickle.load(open(simi_path, 'rb'))
+movies_dict = pickle.load(open(movies_dict_path, 'rb'))
+
+movies = pd.DataFrame(movies_dict)
+
+# ---------- TMDB POSTER ----------
 def fetch_poster(movie_id):
     api_key = "5bf271582f232c240d2a6ffc4461142d"
-    response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key=5bf271582f232c240d2a6ffc4461142d'.format(movie_id))
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}"
+    response = requests.get(url)
     data = response.json()
-    
-    if 'poster_path' in data and data['poster_path']:  # Handle missing poster
+
+    if data.get('poster_path'):
         return "https://image.tmdb.org/t/p/w500/" + data['poster_path']
     
     return "https://via.placeholder.com/500x750.png?text=No+Image"
 
-# Function to recommend movies based on similarity matrix
+# ---------- RECOMMENDER ----------
 def recommend(movie):
     if movie not in movies['title'].values:
-        return [], []  # Handle case when movie is not found
-    
+        return [], []
+
     movie_index = movies[movies['title'] == movie].index[0]
     distances = similarity[movie_index]
-    
-    # Sort movies based on similarity scores
-    movie_list = sorted(list(enumerate(distances)), key=lambda x: x[1], reverse=True)[1:6]
-    
+
+    movie_list = sorted(
+        list(enumerate(distances)),
+        key=lambda x: x[1],
+        reverse=True
+    )[1:6]
+
     recommended_movies = []
     recommended_posters = []
-    
+
     for i in movie_list:
         movie_id = movies.iloc[i[0]].movie_id
         recommended_movies.append(movies.iloc[i[0]].title)
         recommended_posters.append(fetch_poster(movie_id))
-    
+
     return recommended_movies, recommended_posters
 
-# Load movie similarity matrix and movie data
-similarity = pickle.load(open(r'C:\Users\Hp\Desktop\Movie-recommender-system-main\simi.pkl', 'rb'))
-movies_dict = pickle.load(open(r'C:\Users\Hp\Desktop\Movie-recommender-system-main\moviesdict.pkl', 'rb'))
-
-movies = pd.DataFrame(movies_dict)
-
-# Streamlit UI
+# ---------- STREAMLIT UI ----------
 st.title('🎬 Movie Recommender System')
 
 selected_movie_name = st.selectbox(
@@ -51,11 +62,11 @@ selected_movie_name = st.selectbox(
 
 if st.button('Recommend'):
     names, posters = recommend(selected_movie_name)
-    
+
     if not names:
-        st.error("❌ Sorry, no recommendations found. Try a different movie.")
+        st.error("❌ Sorry, no recommendations found.")
     else:
-        cols = st.columns(len(names))  # Dynamically create columns based on number of recommendations
+        cols = st.columns(len(names))
         for col, name, poster in zip(cols, names, posters):
             with col:
                 st.text(name)
