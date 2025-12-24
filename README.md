@@ -95,6 +95,7 @@ To fetch posters, you need a TMDB API Key.
 2. Navigate to Settings -> API to generate your key.
 3. For local use, replace the key variable in app.py or use environment variables.
 4. For Streamlit Cloud, add your key to the "Secrets" management:
+   
    ```text
    TMDB_API_KEY = "your_api_key_here"
    ```
