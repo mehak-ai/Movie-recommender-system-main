@@ -49,6 +49,56 @@ Movie-recommender-system-main/
 
 ```
 
+## 🛠 Technologies Used
 
-Just tell me 👍
+1.  **Data Loading:** The system loads movie data and the similarity matrix from `.pkl` files.
+2.  **Frontend:** Streamlit
+3.  **Data Manipulation:** Pandas, NumPy
+4.  **Machine Learning:** Scikit-learn (Cosine Similarity)
+5.  **API:** The Movie Database (TMDB) API
+6.  **Version Control:** Git & Git LFS
+   
+---
+
+## 📦 Installation
+
+**1️⃣ Clone the repository**
+   ```text
+git clone [https://github.com/mehak-ai/Movie-recommender-system-main.git](https://github.com/mehak-ai/Movie-recommender-system-main.git)
+cd Movie-recommender-system-main
 ```
+
+**2️⃣ Install dependencies**
+   ```text
+pip install -r requirements.txt
+```
+
+**3️⃣ Configure Large Files (Important)**
+   This project uses Git LFS for the .pkl files. If the files are small pointers after cloning, run:
+```text
+git lfs pull
+```
+
+**4️⃣ Run the app**
+  ```text
+streamlit run app.py
+```
+The app should open automatically in your browser at http://localhost:8501.
+
+---
+
+## 🔑 TMDB API Setup
+
+To fetch posters, you need a TMDB API Key.
+
+1. Create an account at TheMovieDB.org.
+2. Navigate to Settings -> API to generate your key.
+3. For local use, replace the key variable in app.py or use environment variables.
+4. For Streamlit Cloud, add your key to the "Secrets" management:
+   ```text
+   TMDB_API_KEY = "your_api_key_here"
+   ```
+   
+---
+
+
